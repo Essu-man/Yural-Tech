@@ -2,13 +2,23 @@ import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 
 // Initialize Neon database connection
-export const sql = neon(process.env.DATABASE_URL!);
+let sql: any = null;
+
+export function getSql() {
+  if (!sql) {
+    if (!process.env.DATABASE_URL) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+    sql = neon(process.env.DATABASE_URL);
+  }
+  return sql;
+}
 
 // Database schema setup
 export async function initializeDatabase() {
   try {
     // Create users table with RBAC
-    await sql`
+    await getSql()`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -21,7 +31,7 @@ export async function initializeDatabase() {
     `;
 
     // Create service_requests table
-    await sql`
+    await getSql()`
       CREATE TABLE IF NOT EXISTS service_requests (
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -47,7 +57,7 @@ export async function initializeDatabase() {
 export async function authenticateUser(email: string, password: string) {
   try {
     
-    const user = await sql`
+    const user = await getSql()`
       SELECT id, email, password_hash, role, name 
       FROM users 
       WHERE email = ${email}
@@ -77,7 +87,7 @@ export async function authenticateUser(email: string, password: string) {
 
 export async function getUserById(id: number) {
   try {
-    const user = await sql`
+    const user = await getSql()`
       SELECT id, email, role, name, created_at
       FROM users 
       WHERE id = ${id}
