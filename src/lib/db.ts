@@ -1,6 +1,15 @@
 import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 
+interface User {
+  id: number;
+  email: string;
+  password_hash: string;
+  role: 'admin' | 'client';
+  name: string;
+  created_at?: string;
+}
+
 // Initialize Neon database connection
 let sql: ReturnType<typeof neon> | null = null;
 
@@ -57,27 +66,28 @@ export async function initializeDatabase() {
 export async function authenticateUser(email: string, password: string) {
   try {
     
-    const user = await getSql()`
+    const users = await getSql()`
       SELECT id, email, password_hash, role, name 
       FROM users 
       WHERE email = ${email}
     `;
 
-    if (user.length === 0) {
+    if (!users || (Array.isArray(users) && users.length === 0)) {
       return null;
     }
 
-    const isValidPassword = await bcrypt.compare(password, user[0].password_hash);
+    const user = Array.isArray(users) ? users[0] as User : users as unknown as User;
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
     
     if (!isValidPassword) {
       return null;
     }
 
     return {
-      id: user[0].id,
-      email: user[0].email,
-      role: user[0].role,
-      name: user[0].name
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name
     };
   } catch (error) {
     console.error('Authentication error:', error);
@@ -87,13 +97,17 @@ export async function authenticateUser(email: string, password: string) {
 
 export async function getUserById(id: number) {
   try {
-    const user = await getSql()`
+    const users = await getSql()`
       SELECT id, email, role, name, created_at
       FROM users 
       WHERE id = ${id}
     `;
 
-    return user.length > 0 ? user[0] : null;
+    if (!users || (Array.isArray(users) && users.length === 0)) {
+      return null;
+    }
+
+    return Array.isArray(users) ? users[0] as User : users as unknown as User;
   } catch (error) {
     console.error('Error fetching user:', error);
     return null;
