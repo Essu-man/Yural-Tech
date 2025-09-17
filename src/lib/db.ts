@@ -2,7 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 
 // Initialize Neon database connection
-let sql: any = null;
+let sql: ReturnType<typeof neon> | null = null;
 
 export function getSql() {
   if (!sql) {
