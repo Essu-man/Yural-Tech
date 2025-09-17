@@ -47,7 +47,7 @@ interface ServiceRequest {
 export default function AdminDashboard() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const [, setUser] = useState<{ name: string; role: string } | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const router = useRouter();
 

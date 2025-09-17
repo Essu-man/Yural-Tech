@@ -52,7 +52,7 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 }
 
-export function setAuthCookie(token: string) {
+export function setAuthCookie(_token: string) {
   // This will be handled in the API route
 }
 

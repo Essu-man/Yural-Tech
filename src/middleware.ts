@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
         const redirectUrl = user.role === 'admin' ? '/admin' : '/client';
         return NextResponse.redirect(new URL(redirectUrl, request.url));
       }
-    } catch (error) {
+    } catch {
       // Invalid token, allow access to auth page
     }
   }
