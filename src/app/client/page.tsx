@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
@@ -17,10 +17,8 @@ import {
   Camera,
   Zap,
   DoorOpen,
-  Key,
   LogOut,
   Search,
-  ChevronDown,
   Eye,
   Edit,
   MapPin,
@@ -35,7 +33,7 @@ interface ServiceRequest {
   service: string;
   location: string;
   date: string;
-  status: "Pending" | "Approved" | "In Progress" | "Completed";
+  status: "Pending" | "Approved" | "In Progress" | "Completed" | "Rejected";
   priority: "High" | "Medium" | "Low";
 }
 
@@ -46,7 +44,7 @@ export default function ClientDashboard() {
     location: "",
     description: ""
   });
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
@@ -69,7 +67,7 @@ export default function ClientDashboard() {
         } else {
           router.push('/auth');
         }
-      } catch (error) {
+      } catch {
         router.push('/auth');
       }
     };
@@ -81,8 +79,8 @@ export default function ClientDashboard() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       router.push('/auth');
-    } catch (error) {
-      console.error('Logout error:', error);
+    } catch {
+      // Logout error - user will be redirected anyway
     }
   };
 
@@ -174,6 +172,7 @@ export default function ClientDashboard() {
       case "Approved": return "bg-blue-100 text-blue-800";
       case "In Progress": return "bg-blue-100 text-blue-800";
       case "Completed": return "bg-green-100 text-green-800";
+      case "Rejected": return "bg-red-100 text-red-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
@@ -361,6 +360,7 @@ export default function ClientDashboard() {
                       <SelectItem value="Approved">Approved</SelectItem>
                       <SelectItem value="In Progress">In Progress</SelectItem>
                       <SelectItem value="Completed">Completed</SelectItem>
+                      <SelectItem value="Rejected">Rejected</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select value={sortBy} onValueChange={setSortBy}>

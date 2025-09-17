@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import bcrypt from 'bcryptjs';
 
 // Initialize Neon database connection
 export const sql = neon(process.env.DATABASE_URL!);
@@ -45,7 +46,6 @@ export async function initializeDatabase() {
 // User authentication functions
 export async function authenticateUser(email: string, password: string) {
   try {
-    const bcrypt = require('bcryptjs');
     
     const user = await sql`
       SELECT id, email, password_hash, role, name 

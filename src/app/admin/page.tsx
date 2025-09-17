@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,13 +41,13 @@ interface ServiceRequest {
   serviceType: string;
   location: string;
   requestDate: string;
-  status: "Pending" | "Approved" | "In Progress" | "Completed";
+  status: "Pending" | "Approved" | "In Progress" | "Completed" | "Rejected";
 }
 
 export default function AdminDashboard() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const router = useRouter();
 
@@ -63,7 +62,7 @@ export default function AdminDashboard() {
         } else {
           router.push('/auth');
         }
-      } catch (error) {
+      } catch {
         router.push('/auth');
       }
     };
@@ -75,8 +74,8 @@ export default function AdminDashboard() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       router.push('/auth');
-    } catch (error) {
-      console.error('Logout error:', error);
+    } catch {
+      // Logout error - user will be redirected anyway
     }
   };
 
@@ -158,7 +157,7 @@ export default function AdminDashboard() {
 
   const handleStatusChange = (requestId: string, newStatus: string) => {
     setRequests(requests.map(req => 
-      req.id === requestId ? { ...req, status: newStatus as any } : req
+      req.id === requestId ? { ...req, status: newStatus as "Pending" | "Approved" | "In Progress" | "Completed" | "Rejected" } : req
     ));
   };
 
@@ -1016,7 +1015,7 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-blue-800">Today's Schedule</h3>
+                      <h3 className="text-lg font-semibold text-blue-800">Today&apos;s Schedule</h3>
                       <p className="text-2xl font-bold text-blue-600">5</p>
                       <p className="text-sm text-blue-700">Installations scheduled</p>
                     </div>

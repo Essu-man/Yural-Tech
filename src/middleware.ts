@@ -34,9 +34,9 @@ export function middleware(request: NextRequest) {
       if (user && user.role !== 'admin') {
         return NextResponse.redirect(new URL('/client', request.url));
       }
-    } catch (error) {
-      return NextResponse.redirect(new URL('/auth', request.url));
-    }
+  } catch {
+    return NextResponse.redirect(new URL('/auth', request.url));
+  }
   }
 
   // If accessing client routes without client role, redirect to admin dashboard
@@ -46,9 +46,9 @@ export function middleware(request: NextRequest) {
       if (user && user.role !== 'client') {
         return NextResponse.redirect(new URL('/admin', request.url));
       }
-    } catch (error) {
-      return NextResponse.redirect(new URL('/auth', request.url));
-    }
+  } catch {
+    return NextResponse.redirect(new URL('/auth', request.url));
+  }
   }
 
   return NextResponse.next();

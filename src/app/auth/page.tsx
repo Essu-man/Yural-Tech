@@ -24,7 +24,7 @@ export default function AuthPage() {
           const redirectUrl = data.user.role === 'admin' ? '/admin' : '/client';
           router.push(redirectUrl);
         }
-      } catch (error) {
+      } catch {
         // User not authenticated, stay on auth page
       }
     };
@@ -54,7 +54,7 @@ export default function AuthPage() {
       } else {
         setError(data.error || 'Login failed');
       }
-    } catch (error) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);

@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
@@ -26,14 +25,14 @@ export function generateToken(user: User): string {
 
 export function verifyToken(token: string): User | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as User;
     return {
       id: decoded.id,
       email: decoded.email,
       role: decoded.role,
       name: decoded.name
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -48,7 +47,7 @@ export async function getCurrentUser(): Promise<User | null> {
     }
     
     return verifyToken(token);
-  } catch (error) {
+  } catch {
     return null;
   }
 }
